@@ -1,0 +1,34 @@
+--- WireGuard-0.0.20170613/src/socket.c	2017-06-13 01:18:14.000000000 +0300
++++ WireGuard-0.0.20170613/src/socket.c	2017-06-19 20:36:58.997018769 +0300
+@@ -12,6 +12,9 @@
+ #include <linux/if_ether.h>
+ #include <net/udp_tunnel.h>
+ #include <net/ipv6.h>
++#define GCC_VERSION (__GNUC__ * 10000 \
++		    + __GNUC_MINOR__ * 100 \
++		    + __GNUC_PATCHLEVEL__)
+ 
+ static inline int send4(struct wireguard_device *wg, struct sk_buff *skb, struct endpoint *endpoint, u8 ds, struct dst_cache *cache)
+ {
+@@ -307,7 +310,10 @@
+ 	struct socket *new4 = NULL;
+ 	struct udp_port_cfg port4 = {
+ 		.family = AF_INET,
++/* Test for GCC > 4.4.7 */
++#if GCC_VERSION > 40407
+ 		.local_ip.s_addr = htonl(INADDR_ANY),
++#endif
+ 		.local_udp_port = htons(wg->incoming_port),
+ 		.use_udp_checksums = true
+ 	};
+@@ -316,7 +322,10 @@
+ 	struct socket *new6 = NULL;
+ 	struct udp_port_cfg port6 = {
+ 		.family = AF_INET6,
++/* Test for GCC > 4.4.7 */
++#if GCC_VERSION > 40407
+ 		.local_ip6 = IN6ADDR_ANY_INIT,
++#endif
+ 		.local_udp_port = htons(wg->incoming_port),
+ 		.use_udp6_tx_checksums = true,
+ 		.use_udp6_rx_checksums = true,
