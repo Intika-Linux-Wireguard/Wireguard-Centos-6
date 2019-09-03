@@ -1,0 +1,23 @@
+--- WireGuard-0.0.20170613/src/tools/Makefile	2017-06-13 01:18:14.000000000 +0300
++++ WireGuard-0.0.20170613/src/tools/Makefile	2017-06-19 20:19:42.560467226 +0300
+@@ -11,6 +11,8 @@
+ WITH_BASHCOMPLETION ?=
+ WITH_WGQUICK ?=
+ WITH_SYSTEMDUNITS ?=
++GCC_EQ_447 := $(shell expr `gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'` \= 40407)
++
+ 
+ ifeq ($(WITH_BASHCOMPLETION),)
+ ifneq ($(strip $(wildcard $(BASHCOMPDIR))),)
+@@ -32,7 +34,11 @@
+ endif
+ 
+ CFLAGS ?= -O3
++ifeq "$(GCC_EQ_447)" "1"
++CFLAGS += -std=gnu99 -D_GNU_SOURCE
++else
+ CFLAGS += -std=gnu11 -D_GNU_SOURCE
++endif
+ CFLAGS += -Wall -Wextra
+ CFLAGS += -MMD -MP
+ CFLAGS += -DRUNSTATEDIR="\"$(RUNSTATEDIR)\""
